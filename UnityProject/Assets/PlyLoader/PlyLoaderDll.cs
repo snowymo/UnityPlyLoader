@@ -71,7 +71,8 @@ public class PlyLoaderDll : MonoBehaviour
         byte[] colors = new byte[count];
         Marshal.Copy(datPtr, colors, 0, count);
         for (int i = 0; i < count/4; i++)
-            resultList.Add(new Color32(colors[i*4], colors[i*4 + 1], colors[i*3 + 2], colors[i*4 + 3]));
+			// Zhenyi: It has to be i*4 for each one not 33333!
+            resultList.Add(new Color32(colors[i*4], colors[i*4 + 1], colors[i*4 + 2], colors[i*4 + 3]));
         return resultList.ToArray();
     }
 
