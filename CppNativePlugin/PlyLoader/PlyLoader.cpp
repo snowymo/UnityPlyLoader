@@ -30,7 +30,7 @@ inline bool CompareVertex(const CMeshO & m, const CMeshO::VertexType & vA, const
 	return (vA.cT() == vB.cT());
 }
 
-PlyFileObject::PlyFileObject(const char* fileName)
+PlyFileObject::PlyFileObject(const char* fileName, int downsample)
 {
 	int mask = 0;
 	tri::io::ImporterPLY<CMeshO>::LoadMask(fileName, mask);
@@ -58,30 +58,33 @@ PlyFileObject::PlyFileObject(const char* fileName)
 
 	for (int i = 0; i < cm.vert.size(); i++)
 	{
-		Point3f position = cm.vert[i].P();
-		verts.push_back(position.X());
-		verts.push_back(position.Y());
-		verts.push_back(position.Z());
-		if (cm.vert[i].IsNormalEnabled())
-		{
-			Point3f normal = cm.vert[i].N();
-			norms.push_back(normal.X());
-			norms.push_back(normal.Y());
-			norms.push_back(normal.Z());
-		}
-		if (cm.vert[i].IsColorEnabled())
-		{
-			Color4b color = cm.vert[i].C();
-			colors.push_back(color[0]);
-			colors.push_back(color[1]);
-			colors.push_back(color[2]);
-			colors.push_back(color[3]);
-		}
-		if (cm.vert[i].IsTexCoordEnabled())
-		{
-			TexCoord2f uv = cm.vert[i].T();
-			uvCoords.push_back(uv.u());
-			uvCoords.push_back(uv.v());
+		// time for downsample
+		if (rand() % 100 >= downsample) {
+			Point3f position = cm.vert[i].P();
+			verts.push_back(position.X());
+			verts.push_back(position.Y());
+			verts.push_back(position.Z());
+			if (cm.vert[i].IsNormalEnabled())
+			{
+				Point3f normal = cm.vert[i].N();
+				norms.push_back(normal.X());
+				norms.push_back(normal.Y());
+				norms.push_back(normal.Z());
+			}
+			if (cm.vert[i].IsColorEnabled())
+			{
+				Color4b color = cm.vert[i].C();
+				colors.push_back(color[0]);
+				colors.push_back(color[1]);
+				colors.push_back(color[2]);
+				colors.push_back(color[3]);
+			}
+			if (cm.vert[i].IsTexCoordEnabled())
+			{
+				TexCoord2f uv = cm.vert[i].T();
+				uvCoords.push_back(uv.u());
+				uvCoords.push_back(uv.v());
+			}
 		}
 	}
 
@@ -149,6 +152,11 @@ void PlyFileObject::updateDataMask(int neededDataMask)
 __declspec(dllexport) PlyFileObject* LoadPly(const char* fileName)
 {
 	return new PlyFileObject(fileName);
+}
+
+PlyFileObject* LoadPlyDownSample(const char* fileName, int downsample)
+{
+	return new PlyFileObject(fileName, downsample);
 }
 
 __declspec(dllexport) void UnLoadPly(PlyFileObject* plyFile)

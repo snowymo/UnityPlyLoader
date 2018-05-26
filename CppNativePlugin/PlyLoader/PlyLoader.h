@@ -52,7 +52,7 @@ public:
 		MM_ALL = 0xffffffff
 	};
 
-	PlyFileObject(const char* fileName);
+	PlyFileObject(const char* fileName, int downsample = 0);
 	vector<float> verts;
 	vector<float> norms;
 	vector<unsigned char> colors;
@@ -68,6 +68,9 @@ private:
 
 extern "C" {
 	__declspec(dllexport) PlyFileObject* LoadPly(const char* fileName);
+
+	// try downsample when loading
+	__declspec(dllexport) PlyFileObject* LoadPlyDownSample(const char* fileName, int downsample);
 
 	__declspec(dllexport) void UnLoadPly(PlyFileObject* plyFile);
 
